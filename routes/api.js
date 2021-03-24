@@ -13,7 +13,8 @@ pool.getConnection(function(err, connection) {
   
     // Use the connection
     connection.query('SELECT * FROM user_info', function (error, results, fields) {
-        console.log(results[0]);
+        console.log("Results length: " + results.length)
+        console.log(results);
       // When done with the connection, release it.
       connection.release();
   
