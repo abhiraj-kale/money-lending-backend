@@ -44,7 +44,7 @@ router.post('/signup', function(req, res, next) {
         if (err) throw err; // not connected!
       
         // Use the connection
-        connection.query("INSERT IGNORE INTO `heroku_2f4d6f8d48f57a4`.`user_info` (`id`, `name`, `password`, `pri_key`, `pub_key`, `phone`) VALUES ('?', '?', '?', '?', '?', '?')", [id,name,password,private_key,public_key,phone],function (error, results, fields) {
+        connection.query('INSERT IGNORE INTO `heroku_2f4d6f8d48f57a4`.`user_info` (`id`, `name`, `password`, `pri_key`, `pub_key`, `phone`) VALUES (?, ?, ?, ?, ?, ?)', [id,name,password,private_key,public_key,phone],function (error, results, fields) {
             console.log("Inserted data Results length: " + results.length)
             console.log(results);
           // When done with the connection, release it.
