@@ -19,18 +19,42 @@ pool.getConnection(function(err, connection) {
 });
 
 router.post('/login', function(req, res, next) {
-    var key = req.body.key;
-    var password = req.body.password;
-    console.log(key);
-    res.end(key)
+    const id = req.body.id;
+    const auth_key = req.body.auth_key;
+    let password, private_key;
 
+    pool.getConnection(function(err, connection) {
+      if (err) throw err; // not connected!
+      
+      // Extract the keys from database
+    connection.query("SELECT `keys`.`private_key` FROM `heroku_2f4d6f8d48f57a4`.`keys`", function (error, result, fields) {
+      if (error) throw error;
+
+      var res_pri_key = result[0].private_key;
+      private_key = new NodeRSA(res_pri_key);
+      let temp_pass = private_key.decrypt(auth_key, "utf8");
+      password = crypto.createHash('md5').update(temp_pass).digest('hex');  
+      
+      connection.query("SELECT `user_info`.`password` FROM `heroku_2f4d6f8d48f57a4`.`user_info` where `user_info`.`id`='?'",[id],function(err, res){
+        if (err) throw err;
+        
+        if(res.length<1)
+          res.json({"log_in_status":false, "message":"No such user."})
+        else{
+          if (res[0].password==password)
+            res.json({"log_in_status":true})
+          else res.json({"log_in_status":false, "message":"Invalid Credentials."})
+        }
+
+      })
+    });
+  });
 });
 
 router.post('/signup', function(req, res, next) {
     const phone = req.body.phone;
     const name = req.body.name;
     const password = crypto.createHash('md5').update(req.body.password).digest('hex');
-    console.log("password : " + password)
     let public_key, auth_key;
 
     // create user id 
@@ -39,16 +63,13 @@ router.post('/signup', function(req, res, next) {
     pool.getConnection(function(err, connection) {
       if (err) throw err; 
 
-    // Extract the keys from database
+    // Extract the public key from database
     connection.query("SELECT `keys`.`public_key` FROM `heroku_2f4d6f8d48f57a4`.`keys`", function (error, result, fields) {
       if (error) throw error;
 
       var res_pub_key = (result[0].public_key);
-      console.log("public key extracted: \n"+res_pub_key);
       public_key = new NodeRSA(res_pub_key);
-      console.log("public_key : " + public_key);
       auth_key = public_key.encrypt(password, 'base64');
-      console.log("Auth key : \n"+auth_key);
     });
 
     //Insert user info into database      
