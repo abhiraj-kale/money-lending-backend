@@ -27,9 +27,9 @@ router.post('/login', function(req, res, next) {
 });
 
 router.post('/signup', function(req, res, next) {
-    const phone = toString(req.body.phone);
-    const name = toString(req.body.name);
-    const password = crypto.createHash('md5').update(toString(req.body.password)).digest('hex');
+    const phone = req.body.phone;
+    const name = req.body.name;
+    const password = crypto.createHash('md5').update(req.body.password).digest('hex');
     let public_key, auth_key;
 
     // create user id 
