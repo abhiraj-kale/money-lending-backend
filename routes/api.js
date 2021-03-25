@@ -33,8 +33,8 @@ router.post('/signup', function(req, res, next) {
     // user id 
     const id = uuidv4(); 
     // creating asym keys
-    const private_key = new NodeRsa(key.exportKey("private")); 
-    const public_key = new NodeRsa(key.exportKey("public"));
+    const private_key = new NodeRSA(key.exportKey("private")); 
+    const public_key = new NodeRSA(key.exportKey("public"));
     var string = "My name is abhiraj";
     const encrypted_string = public_key.encrypt(string, 'base64')
     console.log("encrypted string:" + encrypted_string);
