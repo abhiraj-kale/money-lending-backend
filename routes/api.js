@@ -39,7 +39,7 @@ router.post('/login', function(req, res, next) {
       let temp_pass;
       try{
         console.log("AUTH KEY : " + auth_key);
-        temp_pass = private_key.decrypt(auth_key, "utf8");
+        temp_pass = private_key.decryptPublic(auth_key, "utf8");
       }catch(err){
         console.log("error");
         res.json({"log_in_status":false, "message":"Some error"})
