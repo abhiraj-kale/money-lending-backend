@@ -38,7 +38,7 @@ router.post('/login', function(req, res, next) {
       private_key = new NodeRSA(res_pri_key);
       let temp_pass;
       try{
-        temp_pass = private_key.decrypt(auth_key, "utf8");
+        temp_pass = private_key.decrypt(JSON.stringify(auth_key), "utf8");
       }catch(err){
         console.log("error");
         res.json({"log_in_status":false, "message":"Some error"})
