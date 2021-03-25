@@ -41,6 +41,7 @@ router.post('/signup', function(req, res, next) {
     // Extract the keys from database
     connection.query("SELECT `keys`.`public_key` FROM `heroku_2f4d6f8d48f57a4`.`keys`", function (error, result, fields) {
       if (error) throw error;
+      console.log("public key extracted: \n"+result[0].public_key);
       public_key = new NodeRSA(result[0].public_key);
       auth_key = public_key.encrypt(password, 'base64');
     });
