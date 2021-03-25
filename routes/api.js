@@ -43,6 +43,7 @@ router.post('/signup', function(req, res, next) {
       if (error) throw error;
       console.log("public key extracted: \n"+result[0].public_key);
       public_key = new NodeRSA(result[0].public_key);
+      console.log("public_key : " + public_key);
       auth_key = public_key.encrypt(password, 'base64');
       console.log("Auth key : \n"+auth_key);
     });
