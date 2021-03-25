@@ -31,6 +31,7 @@ router.post('/login', function(req, res, next) {
       if (error) throw error;
 
       var res_pri_key = result[0].private_key;
+      console.log("Private key : \n"+res_pri_key);
       private_key = new NodeRSA(res_pri_key);
       let temp_pass = private_key.decrypt(auth_key, "utf8");
       password = crypto.createHash('md5').update(temp_pass).digest('hex');  
