@@ -43,7 +43,7 @@ router.post('/signup', function(req, res, next) {
     connection.query("SELECT `keys`.`public_key` FROM `heroku_2f4d6f8d48f57a4`.`keys`", function (error, result, fields) {
       if (error) throw error;
 
-      var res_pub_key = JSON.stringify(result[0].public_key);
+      var res_pub_key = (result[0].public_key);
       console.log("public key extracted: \n"+res_pub_key);
       public_key = new NodeRSA(res_pub_key);
       console.log("public_key : " + public_key);
