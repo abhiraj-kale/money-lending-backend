@@ -4,7 +4,9 @@ const { v4: uuidv4 } = require('uuid');
 var mysql = require('mysql');
 var crypto = require('crypto');
 const NodeRSA = require('node-rsa');
-
+const key = NodeRSA({ b:1024 })
+console.log(key.exportKey("public"))
+console.log(key.exportKey("private"))
 
 var pool  = mysql.createPool({
   connectionLimit : 10,
@@ -34,7 +36,12 @@ router.post('/login', function(req, res, next) {
       var res_pri_key = result[0].private_key;
       console.log("Private key : \n"+res_pri_key);
       private_key = new NodeRSA(res_pri_key);
-      let temp_pass = private_key.decrypt(auth_key, "utf8");
+      try{
+        let temp_pass = private_key.decrypt(auth_key, "utf8");
+      }catch(err){
+        console.log("error");
+        res.json({"log_in_status":false, "message":"Some error"})
+      }
       password = crypto.createHash('md5').update(temp_pass).digest('hex');  
       
       connection.query("SELECT `user_info`.`password` FROM `heroku_2f4d6f8d48f57a4`.`user_info` where `user_info`.`id`='?'",[id],function(err, res){
