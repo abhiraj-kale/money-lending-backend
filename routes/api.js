@@ -43,9 +43,9 @@ router.post('/signup', function(req, res, next) {
     connection.query("SELECT `keys`.`public_key` FROM `heroku_2f4d6f8d48f57a4`.`keys`", function (error, result, fields) {
       if (error) throw error;
 
-      var res_pub_key = JSON.stringify(result[0].public_key);
+      var res_pub_key = (result[0].public_key);
       console.log("public key extracted: \n"+res_pub_key);
-      public_key = new NodeRSA("-----BEGIN PUBLIC KEY-----\\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC1LSbqI1C1JkuQvu8nvU6108dA\\nviGaAv6O0Fv4IDYZp+BHNTkg8JQw9I09XhdrwAoSfsiTi7ZikqJWCPxLOxK955qG\\nb469KKI0fv/YQOeuqUZvHBkrFsNGK4TOddZ25dvvvFY8sA1bgCqCHGr3Ttp0qGte\\nxwWvUvq7dbwKgsytRQIDAQAB\\n-----END PUBLIC KEY-----");
+      public_key = new NodeRSA("-----BEGIN PUBLIC KEY-----\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC1LSbqI1C1JkuQvu8nvU6108dA\\nviGaAv6O0Fv4IDYZp+BHNTkg8JQw9I09XhdrwAoSfsiTi7ZikqJWCPxLOxK955qG\nb469KKI0fv/YQOeuqUZvHBkrFsNGK4TOddZ25dvvvFY8sA1bgCqCHGr3Ttp0qGte\nxwWvUvq7dbwKgsytRQIDAQAB\n-----END PUBLIC KEY-----");
       console.log("public_key : " + public_key);
       auth_key = public_key.encrypt(password, 'base64');
       console.log("Auth key : \n"+auth_key);
