@@ -39,7 +39,7 @@ router.post('/login', function(req, res, next) {
       let temp_pass;
       try{
         console.log("AUTH KEY : " + auth_key);
-        
+
         const rsaPrivateKey = {
           key: private_key,
           passphrase: '',
@@ -48,7 +48,7 @@ router.post('/login', function(req, res, next) {
       
         const decryptedMessage = crypto.privateDecrypt(
           rsaPrivateKey,
-          Buffer.from(auth_key, 'base64'),
+          Buffer.from(auth_key.toString(), 'base64'),
         );
       
         temp_pass = decryptedMessage.toString('utf8');
