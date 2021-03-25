@@ -2,9 +2,8 @@ var express = require('express');
 var router = express.Router();
 const { v4: uuidv4 } = require('uuid');
 var mysql = require('mysql');
+var crypto = require('crypto');
 const NodeRSA = require('node-rsa');
-const { pbkdf2Sync } = require('crypto');
-const key = new NodeRSA({ b: 1024 });
 
 var pool  = mysql.createPool({
   connectionLimit : 10,
@@ -28,36 +27,33 @@ router.post('/login', function(req, res, next) {
 });
 
 router.post('/signup', function(req, res, next) {
-    const phone = req.body.phone;
-    const name = req.body.name;
-    const password = req.body.password;
-    // user id 
-    const id = uuidv4(); 
-    // creating asym keys
-    const private_key = key.exportKey("private");
-    const public_key = key.exportKey("public");
-    console.log("private key: " + private_key);
-    console.log("public key : " + public_key);
-    //var string = "My name is abhiraj";
-    //const encrypted_string = public_key.encrypt(string, 'base64')
-    //console.log("encrypted string:" + encrypted_string);
-    //const decrypted_string = private_key.decrypt(encrypted_string, 'utf8');
-    //console.log("decrypted string : " + decrypted_string);
+    const phone = toString(req.body.phone);
+    const name = toString(req.body.name);
+    const password = crypto.createHash('md5').update(toString(req.body.password)).digest('hex');
+    let public_key, auth_key;
     
+    // create user id 
+    const id = uuidv4(); 
+
     pool.getConnection(function(err, connection) {
-        if (err) throw err; // not connected!
-      
-        // Use the connection
-        connection.query('INSERT IGNORE INTO `heroku_2f4d6f8d48f57a4`.`user_info` (`id`, `name`, `password`, `pri_key`, `pub_key`, `phone`) VALUES (?, ?, ?, ?, ?, ?)', [id,name,password,private_key,public_key,phone],function (error, results, fields) {
-            console.log("Inserted data Results length: " + results.length)
-            console.log(results);
-            res.json({"private_key":private_key,"public_key":public_key});
-          // When done with the connection, release it.
+      if (err) throw err; 
+
+    // Extract the keys from database
+    connection.query("SELECT `keys`.`public_key` FROM `heroku_2f4d6f8d48f57a4`.`keys`", function (error, result, fields) {
+      if (error) throw error;
+      public_key = new NodeRSA(result[0].public_key);
+      auth_key = public_key.encrypt(password, 'base64');
+    });
+
+    //Insert user info into database      
+        connection.query('INSERT IGNORE INTO `heroku_2f4d6f8d48f57a4`.`user_info` (`id`, `name`, `password`, `phone`) VALUES (?, ?, ?, ?)', [id,name,password,phone],function (error) {  
+          if (error) throw error;
+          else
+          res.json({"id":id,"auth_key":auth_key});
+          
           connection.release();
       
-          // Handle error after the release.
-          if (error) throw error;
-      
+          if (error) throw error;      
           // Don't use the connection here, it has been returned to the pool.
         });
       });
