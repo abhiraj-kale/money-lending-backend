@@ -33,12 +33,13 @@ router.post('/signup', function(req, res, next) {
     // user id 
     const id = uuidv4(); 
     // creating asym keys
-    const private_key = key.exportKey("private");
-    const public_key = key.exportKey("public");
-
-    console.log(id);
-    console.log(phone);
-    console.log(name);
+    const private_key = new NodeRsa(key.exportKey("private")); 
+    const public_key = new NodeRsa(key.exportKey("public"));
+    var string = "My name is abhiraj";
+    const encrypted_string = public_key.encrypt(string, 'base64')
+    console.log("encrypted string:" + encrypted_string);
+    const decrypted_string = private_key.decrypt(encrypted_string, 'base64');
+    console.log("decrypted string : " + decrypted_string);
     
     pool.getConnection(function(err, connection) {
         if (err) throw err; // not connected!
