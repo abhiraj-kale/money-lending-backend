@@ -23,7 +23,7 @@ pool.getConnection(function(err, connection) {
 
 router.post('/login', function(req, res, next) {
     const id = req.body.id;
-    const auth_key = req.body.auth_key;
+    const auth_key = (req.body.auth_key).toString();
     let password, private_key;
 
     pool.getConnection(function(err, connection) {
