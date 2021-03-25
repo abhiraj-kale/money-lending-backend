@@ -4,7 +4,6 @@ const { v4: uuidv4 } = require('uuid');
 var mysql = require('mysql');
 var crypto = require('crypto');
 const NodeRSA = require('node-rsa');
-NodeRSA.setOptions({encryptionScheme: 'pkcs1'});
 
 var pool  = mysql.createPool({
   connectionLimit : 10,
