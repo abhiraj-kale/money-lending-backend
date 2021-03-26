@@ -88,33 +88,33 @@ router.post('/signup', function(req, res, next) {
     const name = req.body.name;
     const password = req.body.password
     const hashed_pass = crypto.createHash('md5').update(req.body.password).digest('hex');
-    var id;
-    let auth_key;
 
 
     pool.getConnection(function(err, connection) {
       if (err) throw err; 
 
     // Use the public key to encrypt    
-    auth_key = encryptString(password, 'public_key');
+    const auth_key = encryptString(password, 'public_key');
     const cust_id = getCustomerId(phone);
 
-    if(cust_id != false ) res.send(JSON.stringify({"id":cust_id,"auth_key":auth_key}));
-    else 
-    id = uuidv4(); // create user id   
+    if(cust_id != false ) res.json({"id":cust_id,"auth_key":auth_key});
+    else {
+      const id = uuidv4(); // create user id   
 
-    //Insert user info into database      
-        connection.query('INSERT IGNORE INTO `heroku_2f4d6f8d48f57a4`.`user_info` (`id`, `name`, `password`, `phone`) VALUES (?, ?, ?, ?)', [id,name,hashed_pass,phone],function (error) {  
-          if (error) throw error;
-          else
-          res.send(JSON.stringify({"id":id,"auth_key":auth_key}));
-          
-          connection.release();
-      
-          if (error) throw error;      
-          // Don't use the connection here, it has been returned to the pool.
-        });
+      //Insert user info into database      
+      connection.query('INSERT IGNORE INTO `heroku_2f4d6f8d48f57a4`.`user_info` (`id`, `name`, `password`, `phone`) VALUES (?, ?, ?, ?)', [id,name,hashed_pass,phone],function (error) {  
+        if (error) throw error;
+        else
+        res.send(JSON.stringify({"id":id,"auth_key":auth_key}));
+        
+        connection.release();
+    
+        if (error) throw error;      
+        // Don't use the connection here, it has been returned to the pool.
       });
+    }
+
+     });
 });
 
 function getCustomerId(phone){
