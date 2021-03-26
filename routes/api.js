@@ -84,7 +84,7 @@ router.post('/login', function(req, res, next) {
 router.post('/signup', function(req, res, next) {
     const phone = req.body.phone;
     const name = req.body.name;
-    const password = crypto.createHash('md5').update(req.body.password).digest('hex');
+    const password = req.body.password//crypto.createHash('md5').update(req.body.password).digest('hex');
     let auth_key;
 
     // create user id 
