@@ -109,25 +109,24 @@ router.post('/signup', function(req, res, next) {
       if(result.length==1){
         console.log("user id : " + result[0].id);
         res.json({"id":result[0].id,"auth_key":auth_key});
+      }else{
+        const id = uuidv4(); // create user id   
+
+        //Insert user info into database      
+        connection.query('INSERT IGNORE INTO `heroku_2f4d6f8d48f57a4`.`user_info` (`id`, `name`, `password`, `phone`) VALUES (?, ?, ?, ?)', [id,name,hashed_pass,phone],function (error) {  
+          if (error) throw error;
+          else
+          res.send(JSON.stringify({"id":id,"auth_key":auth_key}));
+          
+          connection.release();      
+          if (error) throw error;      
+          // Don't use the connection here, it has been returned to the pool.
+        });
+
       }          
     }) 
 
-      const id = uuidv4(); // create user id   
-
-      //Insert user info into database      
-      connection.query('INSERT IGNORE INTO `heroku_2f4d6f8d48f57a4`.`user_info` (`id`, `name`, `password`, `phone`) VALUES (?, ?, ?, ?)', [id,name,hashed_pass,phone],function (error) {  
-        if (error) throw error;
-        else
-        res.send(JSON.stringify({"id":id,"auth_key":auth_key}));
-        
-        connection.release();
-    
-        if (error) throw error;      
-        // Don't use the connection here, it has been returned to the pool.
-      });
-    
-
-     });
+  });
 });
 
 
