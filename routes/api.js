@@ -126,7 +126,7 @@ function getCustomerId(phone){
       
       if(result.length<1)
         return false
-      else return result[0].phone
+      else return result[0].id
     })    
   })
 }
