@@ -84,7 +84,8 @@ router.post('/login', function(req, res, next) {
 router.post('/signup', function(req, res, next) {
     const phone = req.body.phone;
     const name = req.body.name;
-    const password = req.body.password//crypto.createHash('md5').update(req.body.password).digest('hex');
+    const password = req.body.password
+    const hashed_pass = crypto.createHash('md5').update(req.body.password).digest('hex');
     let auth_key;
 
     // create user id 
@@ -97,7 +98,7 @@ router.post('/signup', function(req, res, next) {
     auth_key = encryptString(password, 'public_key');
 
     //Insert user info into database      
-        connection.query('INSERT IGNORE INTO `heroku_2f4d6f8d48f57a4`.`user_info` (`id`, `name`, `password`, `phone`) VALUES (?, ?, ?, ?)', [id,name,password,phone],function (error) {  
+        connection.query('INSERT IGNORE INTO `heroku_2f4d6f8d48f57a4`.`user_info` (`id`, `name`, `password`, `phone`) VALUES (?, ?, ?, ?)', [id,name,hashed_pass,phone],function (error) {  
           if (error) throw error;
           else
           res.send(JSON.stringify({"id":id,"auth_key":auth_key}));
