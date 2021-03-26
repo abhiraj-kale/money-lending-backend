@@ -57,7 +57,6 @@ router.post('/login', function(req, res, next) {
     pool.getConnection(function(err, connection) {
       if (err) throw err; // not connected!
       
-      if (error) throw error;
       let temp_pass;
       try{
         temp_pass = decryptString("AJoXU2zumVMl2tYRf8i78ubwbO50vpN4pjoXz85xiu8j0/HK4PpQ27vxB4Uztca27N2IVHDC2VfvvrGGpmy4pluABg==", 'private_key');
