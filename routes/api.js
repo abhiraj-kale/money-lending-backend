@@ -55,7 +55,7 @@ pool.getConnection(function(err, connection) {
 
 router.post('/login', function(req, response, next) {
     const id = req.body.id;
-    const auth_key = JSON.stringify(req.body.auth_key).replace(/\s+/, "") 
+    const auth_key = JSON.stringify(req.body.auth_key).replace(/ /g,'') 
     console.log("ID : \n" + id);
     console.log("auth key : \n" + auth_key)
     let password;
