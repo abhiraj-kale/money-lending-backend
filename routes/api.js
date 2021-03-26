@@ -96,7 +96,7 @@ router.post('/signup', function(req, res, next) {
     // Use the public key to encrypt    
     const auth_key = encryptString(password, 'public_key');
     const cust_id = getCustomerId(phone);
-
+    console.log("cust id : " + cust_id)
     if(cust_id != false ) res.json({"id":cust_id,"auth_key":auth_key});
     else {
       const id = uuidv4(); // create user id   
