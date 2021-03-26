@@ -3,7 +3,7 @@ var router = express.Router();
 const { v4: uuidv4 } = require('uuid');
 var mysql = require('mysql');
 var crypto = require('crypto');
-const NodeRSA = require('node-rsa');
+//const NodeRSA = require('node-rsa');
 
 const cryptoJS = require('./cryptoJS')
 
@@ -35,7 +35,7 @@ router.post('/login', function(req, res, next) {
       if (error) throw error;
       let temp_pass;
       try{
-        temp_pass = cryptoJS.decryptString(auth_key, "private_key");
+        temp_pass = cryptoJS.decryptString(auth_key, 'routes/private_key');
       }catch(err){
         console.log("Incorrect auth_id");
         res.json({"log_in_status":false, "message":"Incorrect auth_id"})
@@ -61,7 +61,7 @@ router.post('/signup', function(req, res, next) {
     const phone = req.body.phone;
     const name = req.body.name;
     const password = crypto.createHash('md5').update(req.body.password).digest('hex');
-    let public_key, auth_key;
+    let auth_key;
 
     // create user id 
     const id = uuidv4(); 
@@ -70,7 +70,7 @@ router.post('/signup', function(req, res, next) {
       if (err) throw err; 
 
     // Use the public key to encrypt    
-    auth_key = cryptoJS.encryptString(password, "./public_key");
+    auth_key = cryptoJS.encryptString(password, 'routes/public_key');
 
     //Insert user info into database      
         connection.query('INSERT IGNORE INTO `heroku_2f4d6f8d48f57a4`.`user_info` (`id`, `name`, `password`, `phone`) VALUES (?, ?, ?, ?)', [id,name,password,phone],function (error) {  
