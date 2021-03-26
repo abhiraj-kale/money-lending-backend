@@ -4,6 +4,9 @@ const { v4: uuidv4 } = require('uuid');
 var mysql = require('mysql');
 var crypto = require('crypto');
 const NodeRSA = require('node-rsa');
+
+const cryptoJS = require('./cryptoJS')
+
 //const key = NodeRSA({ b:1024 })
 //console.log(key.exportKey("public"))
 //console.log(key.exportKey("private"))
@@ -24,40 +27,18 @@ pool.getConnection(function(err, connection) {
 router.post('/login', function(req, res, next) {
     const id = req.body.id;
     const auth_key = (JSON.stringify(req.body.auth_key)).replace(/ /g,'');
-    let password, private_key;
+    let password;
 
     pool.getConnection(function(err, connection) {
       if (err) throw err; // not connected!
       
-      // Extract the keys from database
-    connection.query("SELECT `keys`.`private_key` FROM `heroku_2f4d6f8d48f57a4`.`keys`", function (error, result, fields) {
       if (error) throw error;
-      
-      var res_pri_key = result[0].private_key;
-      console.log("Private key : \n"+res_pri_key);
-      private_key = new NodeRSA(res_pri_key);
       let temp_pass;
       try{
-        console.log("AUTH KEY : " + auth_key);
-        /*
-        const rsaPrivateKey = {
-          key: private_key,
-          passphrase: '',
-          padding: crypto.constants.RSA_PKCS1_PADDING,
-        };
-      
-        const decryptedMessage = crypto.privateDecrypt(
-          rsaPrivateKey,
-          Buffer.from(auth_key.toString(), 'base64'),
-        );
-      
-        temp_pass = decryptedMessage.toString('utf8');
-        */
-        console.log("is private : " + private_key.isPrivate());
-        temp_pass = private_key.decrypt(auth_key.toString(), "utf8");
+        temp_pass = cryptoJS.decryptString(auth_key, "private_key");
       }catch(err){
-        console.log("error");
-        res.json({"log_in_status":false, "message":"Some error"})
+        console.log("Incorrect auth_id");
+        res.json({"log_in_status":false, "message":"Incorrect auth_id"})
       }
       password = crypto.createHash('md5').update(temp_pass).digest('hex');  
       
@@ -73,7 +54,6 @@ router.post('/login', function(req, res, next) {
         }
 
       })
-    });
   });
 });
 
@@ -89,14 +69,8 @@ router.post('/signup', function(req, res, next) {
     pool.getConnection(function(err, connection) {
       if (err) throw err; 
 
-    // Extract the public key from database
-    connection.query("SELECT `keys`.`public_key` FROM `heroku_2f4d6f8d48f57a4`.`keys`", function (error, result, fields) {
-      if (error) throw error;
-
-      var res_pub_key = (result[0].public_key);
-      public_key = new NodeRSA(res_pub_key);
-      auth_key = public_key.encrypt(password, 'base64');
-    });
+    // Use the public key to encrypt    
+    auth_key = cryptoJS.encryptString(password, "./public_key");
 
     //Insert user info into database      
         connection.query('INSERT IGNORE INTO `heroku_2f4d6f8d48f57a4`.`user_info` (`id`, `name`, `password`, `phone`) VALUES (?, ?, ?, ?)', [id,name,password,phone],function (error) {  
