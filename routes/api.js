@@ -47,7 +47,7 @@ pool.getConnection(function(err, connection) {
     else console.log("Connected to DB")
 });
 
-router.post('/login', function(req, res, next) {
+router.post('/login', function(req, response, next) {
     const id = req.body.id;
     const auth_key = req.body.auth_key
     console.log("ID : \n" + id);
@@ -63,7 +63,7 @@ router.post('/login', function(req, res, next) {
         console.log("temp pass : " + temp_pass);
       }catch(Error){
         console.log("Incorrect auth_id");
-        res.json({"log_in_status":false, "message":"Incorrect auth_id"})
+        response.json({"log_in_status":false, "message":"Incorrect auth_id"})
       }
       password = crypto.createHash('md5').update(temp_pass).digest('hex');  
       
@@ -71,11 +71,11 @@ router.post('/login', function(req, res, next) {
         if (err) throw err;
         
         if(res.length<1)
-          res.json({"log_in_status":false, "message":"No such user."})
+        response.json({"log_in_status":false, "message":"No such user."})
         else{
           if (res[0].password==password)
-            res.json({"log_in_status":true})
-          else res.json({"log_in_status":false, "message":"Invalid Credentials."})
+          response.json({"log_in_status":true})
+          else response.json({"log_in_status":false, "message":"Invalid Credentials."})
         }
 
       })
