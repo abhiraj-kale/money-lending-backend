@@ -63,7 +63,7 @@ router.post('/login', function(req, response, next) {
         console.log("temp pass : " + temp_pass);
       }catch(Error){
         console.log("Incorrect auth_id");
-        response.json({"log_in_status":false, "message":"Incorrect auth_id"})
+        response.json({"log_in_status":false, "message":"Incorrect auth_key"})
       }
       password = crypto.createHash('md5').update(temp_pass).digest('hex');  
       
