@@ -88,6 +88,7 @@ router.post('/signup', function(req, res, next) {
     const name = req.body.name;
     const password = req.body.password
     const hashed_pass = crypto.createHash('md5').update(req.body.password).digest('hex');
+    var id;
     let auth_key;
 
 
@@ -99,9 +100,8 @@ router.post('/signup', function(req, res, next) {
     const cust_id = getCustomerId(phone);
 
     if(cust_id != false ) res.send(JSON.stringify({"id":cust_id,"auth_key":auth_key}));
-    else
-    // create user id 
-    const id = uuidv4();   
+    else 
+    id = uuidv4(); // create user id   
 
     //Insert user info into database      
         connection.query('INSERT IGNORE INTO `heroku_2f4d6f8d48f57a4`.`user_info` (`id`, `name`, `password`, `phone`) VALUES (?, ?, ?, ?)', [id,name,hashed_pass,phone],function (error) {  
