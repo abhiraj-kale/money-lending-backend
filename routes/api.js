@@ -9,20 +9,7 @@ const fs = require("fs");
 function getCustomerId(phone){
   pool.getConnection(function(err,connection){
     if(err) throw err;
-    console.log("phone no : "+phone)
-    connection.query("SELECT `user_info`.`id` FROM `heroku_2f4d6f8d48f57a4`.`user_info` where `user_info`.`phone`=?",[phone],function(error, result){
-      if(error) throw error;
-      
-      connection.release();    
-      if (error) throw error; 
-      
-      if(result.length<1)
-        return false
-      else{
-        console.log("user id : " + result[0].id);
-        return result[0].id;
-      }          
-    })    
+   
   })
 }
 
@@ -114,10 +101,17 @@ router.post('/signup', function(req, res, next) {
 
     // Use the public key to encrypt    
     const auth_key = encryptString(password, 'public_key');
-    const cust_id = getCustomerId(phone);
-    console.log("cust id : " + cust_id)
-    if(cust_id != false ) res.json({"id":cust_id,"auth_key":auth_key});
-    else {
+
+    console.log("phone no : "+phone)
+    connection.query("SELECT `user_info`.`id` FROM `heroku_2f4d6f8d48f57a4`.`user_info` where `user_info`.`phone`=?",[phone],function(error, result){
+      if(error) throw error;
+      
+      if(result.length==1){
+        console.log("user id : " + result[0].id);
+        res.json({"id":result[0].id,"auth_key":auth_key});
+      }          
+    }) 
+
       const id = uuidv4(); // create user id   
 
       //Insert user info into database      
@@ -131,7 +125,7 @@ router.post('/signup', function(req, res, next) {
         if (error) throw error;      
         // Don't use the connection here, it has been returned to the pool.
       });
-    }
+    
 
      });
 });
