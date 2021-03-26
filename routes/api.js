@@ -120,13 +120,16 @@ router.post('/signup', function(req, res, next) {
 function getCustomerId(phone){
   pool.getConnection(function(err,connection){
     if(err) throw err;
-
-    connection.query("SELECT `user_info`.`id` FROM `heroku_2f4d6f8d48f57a4`.`user_info` where `user_info`.`phone`=?",[phone],function(err, result){
+    console.log("phone no : "+phone)
+    connection.query("SELECT `user_info`.`id` FROM `heroku_2f4d6f8d48f57a4`.`user_info` where `user_info`.`phone`=?",[JSON.stringify(phone)],function(err, result){
       if(err) throw err;
       
       if(result.length<1)
         return false
-      else return result[0].id
+      else{
+        console.log("user id : " + result[0].id);
+        return result[0].id;
+      } 
     })    
   })
 }
