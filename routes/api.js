@@ -2,14 +2,37 @@ var express = require('express');
 var router = express.Router();
 const { v4: uuidv4 } = require('uuid');
 var mysql = require('mysql');
-var crypto = require('crypto');
+const crypto = require('crypto');
+const fs = require("fs");
 //const NodeRSA = require('node-rsa');
 
-const cryptoJS = require('./cryptoJS')
 
-//const key = NodeRSA({ b:1024 })
-//console.log(key.exportKey("public"))
-//console.log(key.exportKey("private"))
+// Creating a function to encrypt string
+function encryptString (plaintext, publicKeyFile) {
+	const publicKey = fs.readFileSync(publicKeyFile, "utf8");
+
+	// publicEncrypt() method with its parameters
+	const encrypted = crypto.publicEncrypt(
+		publicKey, Buffer.from(plaintext));
+
+	return encrypted.toString("base64");
+}
+
+// Creating a function to decrypt string
+function decryptString (ciphertext, privateKeyFile) {
+	const privateKey = fs.readFileSync(privateKeyFile, "utf8");
+
+	// privateDecrypt() method with its parameters
+	const decrypted = crypto.privateDecrypt(
+	{
+		key: privateKey,
+		passphrase: '',
+	},
+	Buffer.from(ciphertext, "base64")
+	);
+
+	return decrypted.toString("utf8");
+}
 
 var pool  = mysql.createPool({
   connectionLimit : 10,
@@ -35,7 +58,8 @@ router.post('/login', function(req, res, next) {
       if (error) throw error;
       let temp_pass;
       try{
-        temp_pass = cryptoJS.decryptString(auth_key, 'routes/private_key');
+        temp_pass = decryptString(auth_key, 'private_key');
+        console.log("temp pass : " + temp_pass);
       }catch(err){
         console.log("Incorrect auth_id");
         res.json({"log_in_status":false, "message":"Incorrect auth_id"})
@@ -70,13 +94,13 @@ router.post('/signup', function(req, res, next) {
       if (err) throw err; 
 
     // Use the public key to encrypt    
-    auth_key = cryptoJS.encryptString(password, 'routes/public_key');
+    auth_key = encryptString(password, 'public_key');
 
     //Insert user info into database      
         connection.query('INSERT IGNORE INTO `heroku_2f4d6f8d48f57a4`.`user_info` (`id`, `name`, `password`, `phone`) VALUES (?, ?, ?, ?)', [id,name,password,phone],function (error) {  
           if (error) throw error;
           else
-          res.json({"id":id,"auth_key":auth_key});
+          res.send(JSON.stringify({"id":id,"auth_key":auth_key}));
           
           connection.release();
       
