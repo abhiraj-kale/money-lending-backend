@@ -90,14 +90,18 @@ router.post('/signup', function(req, res, next) {
     const hashed_pass = crypto.createHash('md5').update(req.body.password).digest('hex');
     let auth_key;
 
-    // create user id 
-    const id = uuidv4(); 
 
     pool.getConnection(function(err, connection) {
       if (err) throw err; 
 
     // Use the public key to encrypt    
     auth_key = encryptString(password, 'public_key');
+    const cust_id = getCustomerId(phone);
+
+    if(cust_id != false ) res.send(JSON.stringify({"id":cust_id,"auth_key":auth_key}));
+    else
+    // create user id 
+    const id = uuidv4();   
 
     //Insert user info into database      
         connection.query('INSERT IGNORE INTO `heroku_2f4d6f8d48f57a4`.`user_info` (`id`, `name`, `password`, `phone`) VALUES (?, ?, ?, ?)', [id,name,hashed_pass,phone],function (error) {  
@@ -112,5 +116,19 @@ router.post('/signup', function(req, res, next) {
         });
       });
 });
+
+function getCustomerId(phone){
+  pool.getConnection(function(err,connection){
+    if(err) throw err;
+
+    connection.query("SELECT `user_info`.`id` FROM `heroku_2f4d6f8d48f57a4`.`user_info` where `user_info`.`phone`=?",[phone],function(err, result){
+      if(err) throw err;
+      
+      if(result.length<1)
+        return false
+      else return result[0].phone
+    })    
+  })
+}
 
 module.exports = router;
