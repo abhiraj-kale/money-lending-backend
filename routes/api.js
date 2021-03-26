@@ -69,7 +69,8 @@ router.post('/login', function(req, response, next) {
       
       connection.query("SELECT `user_info`.`password` FROM `heroku_2f4d6f8d48f57a4`.`user_info` where `user_info`.`id`=?",[id],function(err, res){
         if (err) throw err;
-        
+        console.log("result length : " + res.length);
+        console.log(res);
         if(res.length<1)
         response.json({"log_in_status":false, "message":"No such user."})
         else{
