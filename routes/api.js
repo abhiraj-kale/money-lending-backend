@@ -59,7 +59,7 @@ router.post('/login', function(req, res, next) {
       
       let temp_pass;
       try{
-        temp_pass = decryptString("AJoXU2zumVMl2tYRf8i78ubwbO50vpN4pjoXz85xiu8j0/HK4PpQ27vxB4Uztca27N2IVHDC2VfvvrGGpmy4pluABg==", 'private_key');
+        temp_pass = decryptString(auth_key, 'private_key');
         console.log("temp pass : " + temp_pass);
       }catch(Error){
         console.log("Incorrect auth_id");
