@@ -32,14 +32,14 @@ router.post('/login', function(req, res, next) {
       // Extract the keys from database
     connection.query("SELECT `keys`.`private_key` FROM `heroku_2f4d6f8d48f57a4`.`keys`", function (error, result, fields) {
       if (error) throw error;
-
+      
       var res_pri_key = result[0].private_key;
       console.log("Private key : \n"+res_pri_key);
       private_key = new NodeRSA(res_pri_key);
       let temp_pass;
       try{
         console.log("AUTH KEY : " + auth_key);
-
+        /*
         const rsaPrivateKey = {
           key: private_key,
           passphrase: '',
@@ -52,7 +52,9 @@ router.post('/login', function(req, res, next) {
         );
       
         temp_pass = decryptedMessage.toString('utf8');
-        //temp_pass = private_key.decrypt(auth_key.toString(), "utf8");
+        */
+        console.log("is private : " + private_key.isPrivate());
+        temp_pass = private_key.decrypt(auth_key.toString(), "utf8");
       }catch(err){
         console.log("error");
         res.json({"log_in_status":false, "message":"Some error"})
