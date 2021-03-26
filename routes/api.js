@@ -50,6 +50,8 @@ pool.getConnection(function(err, connection) {
 router.post('/login', function(req, res, next) {
     const id = req.body.id;
     const auth_key = (JSON.stringify(req.body.auth_key)).replace(/ /g,'');
+    console.log("ID : \n" + id);
+    console.log("auth key : \n" + auth_key)
     let password;
 
     pool.getConnection(function(err, connection) {
@@ -60,7 +62,7 @@ router.post('/login', function(req, res, next) {
       try{
         temp_pass = decryptString(auth_key, 'private_key');
         console.log("temp pass : " + temp_pass);
-      }catch(err){
+      }catch(Error){
         console.log("Incorrect auth_id");
         res.json({"log_in_status":false, "message":"Incorrect auth_id"})
       }
