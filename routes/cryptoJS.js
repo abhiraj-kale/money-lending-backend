@@ -4,7 +4,7 @@
 // Including crypto and fs module
 const crypto = require('crypto');
 const fs = require("fs");
-/*
+
 // Using a function generateKeyFiles
 function generateKeyFiles() {
 
@@ -29,7 +29,7 @@ function generateKeyFiles() {
 
 // Generate keys
 generateKeyFiles();
-*/
+
 // Creating a function to encrypt string
 function encryptString (plaintext, publicKeyFile) {
 	const publicKey = fs.readFileSync(publicKeyFile, "utf8");
