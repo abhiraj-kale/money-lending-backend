@@ -85,11 +85,11 @@ router.post('/login', function(req, response, next) {
             console.log("Password matched")
             const transact_id = uuidv4();
             console.log("new transact_id : " + transact_id)
-            connection.query("UPDATE `heroku_2f4d6f8d48f57a4`.`user_info` SET `transact_id` = ? WHERE `id` = ?",[transact_id,id, function(e, result) {
+            connection.query("UPDATE `heroku_2f4d6f8d48f57a4`.`user_info` SET `transact_id` = ? WHERE `id` = ?",[transact_id,id], function(e, result) {
               if (e) throw e;
               console.log(result.affectedRows + " record(s) updated");
               response.json({"transact_id":transact_id,"log_in_status":true})
-            }])
+            })
           }
           else {
             console.log("Password didn't match")
