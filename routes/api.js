@@ -81,8 +81,11 @@ router.post('/login', function(req, response, next) {
         if(res.length<1)
         response.json({"log_in_status":false, "message":"No such user."})
         else{
-          if (res[0].password==password)
-          response.json({"log_in_status":true})
+          if (res[0].password==password){
+            const transact_id = uuidv4();
+
+            response.json({"log_in_status":true})
+          }
           else response.json({"log_in_status":false, "message":"Invalid Credentials."})
         }
 
@@ -109,7 +112,7 @@ router.post('/signup', function(req, res, next) {
       
       if(result.length==1){
         console.log("user id : " + result[0].id);
-        res.json({"id":result[0].id,"auth_key":auth_key});
+        res.json({"id":result[0].id,"auth_key":auth_key,"log_in_status":false,"status":"Account already exists"});
       }else{
         const id = uuidv4(); // create user id   
         const transact_id = uuidv4();
