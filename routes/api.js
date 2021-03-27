@@ -112,7 +112,7 @@ router.post('/signup', function(req, res, next) {
       
       if(result.length==1){
         console.log("user id : " + result[0].id);
-        res.json({"id":result[0].id,"auth_key":auth_key,"log_in_status":false,"status":"Account already exists"});
+        res.json({"log_in_status":false,"status":"Account already exists"});
       }else{
         const id = uuidv4(); // create user id   
         const transact_id = uuidv4();
