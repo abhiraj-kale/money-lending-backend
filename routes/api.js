@@ -53,7 +53,7 @@ pool.getConnection(function(err, connection) {
     else console.log("Connected to DB")
 });
 
-router.post('/validate', function(req, response, next) {
+router.post('/login', function(req, response, next) {
     const id = req.body.id;
     const auth_key = String(req.body.auth_key).replace(/\s/g, '+')
     console.log("ID : \n" + id);
@@ -100,6 +100,34 @@ router.post('/validate', function(req, response, next) {
       })
   });
 });
+
+
+router.post('/getKeys', function(req, res, next) {
+  const phone = req.body.phone;
+  const password = req.body.password
+  const hashed_pass = crypto.createHash('md5').update(req.body.password).digest('hex');
+
+
+  pool.getConnection(function(err, connection) {
+    if (err) throw err; 
+
+  // Use the public key to encrypt    
+  const auth_key = encryptString(password, 'public_key');
+
+  console.log("phone no : "+phone)
+  connection.query("SELECT `user_info`.`id` FROM `heroku_2f4d6f8d48f57a4`.`user_info` where `user_info`.`phone`=? AND `user_info`.`password`=?",[phone,hashed_pass],function(error, result){
+    if(error) throw error;
+    
+    if(result.length==1){
+      res.json({"id":result[0].id,"auth_key":auth_key,"account_status":true});
+    }else{
+      res.json({"log_in_status":false,"account_status":false});
+    }          
+  }) 
+
+});
+});
+
 
 router.post('/signup', function(req, res, next) {
     const phone = req.body.phone;
