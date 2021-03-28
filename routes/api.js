@@ -53,7 +53,7 @@ pool.getConnection(function(err, connection) {
     else console.log("Connected to DB")
 });
 
-router.post('/login', function(req, response, next) {
+router.post('/validate', function(req, response, next) {
     const id = req.body.id;
     const auth_key = String(req.body.auth_key).replace(/\s/g, '+')
     console.log("ID : \n" + id);
