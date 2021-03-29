@@ -56,9 +56,6 @@ pool.getConnection(function(err, connection) {
 router.post('/login', function(req, response, next) {
     const id = req.body.id;
     const auth_key = String(req.body.auth_key).replace(/\s/g, '+')
-    console.log("ID : \n" + id);
-    console.log("auth key without filter: \n" + req.body.auth_key)
-    console.log("auth key : \n" + auth_key)
     let password;
 
     pool.getConnection(function(err, connection) {
@@ -67,32 +64,24 @@ router.post('/login', function(req, response, next) {
       let temp_pass;
       try{
         temp_pass = decryptString(auth_key, 'private_key');
-        console.log("temp pass : " + temp_pass);
       }catch(Error){
-        console.log("Incorrect auth_id");
         response.json({"log_in_status":false, "message":"Incorrect auth_key"})
       }
       password = crypto.createHash('md5').update(temp_pass).digest('hex');  
       
       connection.query("SELECT `user_info`.`password` FROM `heroku_2f4d6f8d48f57a4`.`user_info` where `user_info`.`id`=?",[id],function(err, res){
         if (err) throw err;
-        console.log("result length : " + res.length);
-        console.log(res);
         if(res.length<1)
         response.json({"log_in_status":false, "message":"No such user."})
         else{
           if (res[0].password==password){
-            console.log("Password matched")
             const transact_id = uuidv4();
-            console.log("new transact_id : " + transact_id)
             connection.query("UPDATE `heroku_2f4d6f8d48f57a4`.`user_info` SET `transact_id` = ? WHERE `id` = ?",[transact_id,id], function(e, result) {
               if (e) throw e;
-              console.log(result.affectedRows + " record(s) updated");
               response.json({"transact_id":transact_id,"log_in_status":true})
             })
           }
           else {
-            console.log("Password didn't match")
             response.json({"log_in_status":false, "message":"Invalid Credentials."})
           }
         }
@@ -114,7 +103,6 @@ router.post('/getKeys', function(req, res, next) {
   // Use the public key to encrypt    
   const auth_key = encryptString(password, 'public_key');
 
-  console.log("phone no : "+phone)
   connection.query("SELECT `user_info`.`id` FROM `heroku_2f4d6f8d48f57a4`.`user_info` where `user_info`.`phone`=? AND `user_info`.`password`=?",[phone,hashed_pass],function(error, result){
     if(error) throw error;
     
@@ -142,7 +130,6 @@ router.post('/signup', function(req, res, next) {
     // Use the public key to encrypt    
     const auth_key = encryptString(password, 'public_key');
 
-    console.log("phone no : "+phone)
     connection.query("SELECT `user_info`.`id` FROM `heroku_2f4d6f8d48f57a4`.`user_info` where `user_info`.`phone`=?",[phone],function(error, result){
       if(error) throw error;
       
