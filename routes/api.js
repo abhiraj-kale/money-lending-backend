@@ -4,6 +4,7 @@ const { v4: uuidv4 } = require('uuid');
 var mysql = require('mysql');
 const crypto = require('crypto');
 const fs = require("fs");
+const { response } = require('../app');
 //const NodeRSA = require('node-rsa');
 
 function getCustomerId(phone){
@@ -155,6 +156,37 @@ router.post('/signup', function(req, res, next) {
   });
 });
 
+router.get('/profile',function(req, response){
+  const id = req.body.id;
+  const auth_key = String(req.body.auth_key).replace(/\s/g, '+')
+  let password;
 
+  pool.getConnection(function(err, connection) {
+    if (err) throw err; // not connected!
+    
+    let temp_pass;
+    try{
+      temp_pass = decryptString(auth_key, 'private_key');
+    }catch(Error){
+      response.json({"status":false, "message":"Incorrect auth_key"})
+    }
+    password = crypto.createHash('md5').update(temp_pass).digest('hex');  
+    
+    connection.query("SELECT `user_info`.`password`,`user_info`.`name`,`user_info`.`phone` FROM `heroku_2f4d6f8d48f57a4`.`user_info` where `user_info`.`id`=?",[id],function(err, res){
+      if (err) throw err;
+      if(res.length<1)
+      response.json({"status":false, "message":"No such user."})
+      else{
+        if (res[0].password==password){
+          response.json({"name":res[0].name, "phone": res[0].phone, "status": true})
+        }
+        else {
+          response.json({"status":false, "message":"Password doesn't match."})
+        }
+      }
+
+    })
+});
+})
 
 module.exports = router;
