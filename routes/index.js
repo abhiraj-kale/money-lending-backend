@@ -6,7 +6,7 @@ var http = require('http'); //importing http
 function startKeepAlive() {
     setInterval(function() {
         var options = {
-            host: 'https://money-lending-app.herokuapp.com/',
+            host: 'money-lending-app.herokuapp.com',
             port: 80,
             path: '/'
         };
