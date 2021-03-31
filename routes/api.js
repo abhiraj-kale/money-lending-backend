@@ -5,6 +5,7 @@ var mysql = require('mysql');
 const crypto = require('crypto');
 const fs = require("fs");
 const { response } = require('../app');
+const { type } = require('os');
 //const NodeRSA = require('node-rsa');
 
 function getCustomerId(phone){
@@ -210,7 +211,7 @@ router.post('/pay', function(req, res){
       else{
         console.log("sender exists : " + result[0].id);
         sender = result[0].id;
-        console.log("amount : " + amount + "\t"+ "wallet : " + result[0].wallet);
+        console.log("amount : " +typeof amount + "\t"+ "wallet : " +typeof result[0].wallet);
         if(amount > result[0].wallet)
           response.json({"status":false, "message":"Transaction amount greater than money in wallet"})
         else{
