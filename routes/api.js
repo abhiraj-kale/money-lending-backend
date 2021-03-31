@@ -207,16 +207,17 @@ router.post('/pay', function(req, res){
       if (err) throw err;
       console.log(result);
       if(result.length<1)
-        response.json({"status":false, "message":"Sender user doesn't exist."})
+        res.json({"status":false, "message":"Sender user doesn't exist."})
       else{
         console.log("sender exists : " + result[0].id);
         sender = result[0].id;
-        console.log("amount : " +typeof amount + "\t"+ "wallet : " +typeof parseInt(result[0].wallet));
-        if(amount > parseInt(result[0].wallet))
-          response.json({"status":false, "message":"Transaction amount greater than money in wallet"})
+        var wallet = parseInt(result[0].wallet);
+        console.log("amount : " + amount + "\t"+ "wallet : " + wallet);
+        if(amount > wallet)
+          res.json({"status":false, "message":"Transaction amount greater than money in wallet"})
         else{
           //connection.query("UPDATE `heroku_2f4d6f8d48f57a4`.`user_info` SET `transact_id` = ? WHERE `id` = ?")
-          response.json({"status":true, "message":"Transaction is valid"})
+          res.json({"status":true, "message":"Transaction is valid"})
         }
       }
     })
@@ -225,7 +226,7 @@ router.post('/pay', function(req, res){
     connection.query("SELECT `user_info`.`id` FROM `heroku_2f4d6f8d48f57a4`.`user_info` where `user_info`.`transact_id`=?",[receiver_trans],function(err, result){
       if (err) throw err;
       if(result.length<1)
-      response.json({"status":false, "message":"Receiver user doesn't exist."})
+      res.json({"status":false, "message":"Receiver user doesn't exist."})
       else{
         console.log("receiver exists : " + result[0].id);
         receiver = result[0].id;
