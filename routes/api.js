@@ -227,7 +227,7 @@ router.post('/pay', function(req, res){
             else{
               console.log("receiver exists : " + result[0].id);
               receiver_id = result[0].id;
-              new_receiver_wallet = parseInt(result[0].wallet) + new_sender_wallet;
+              new_receiver_wallet = parseInt(result[0].wallet) + amount;
               console.log("new receiver wallet : " + new_receiver_wallet);
 
               
