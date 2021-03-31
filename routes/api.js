@@ -276,14 +276,16 @@ router.get('/lent', function(req, res){
         connection.query("SELECT `transactions`.`transact_no`,`transactions`.`receiver_id`,`transactions`.`amount` FROM `heroku_2f4d6f8d48f57a4`.`transactions` WHERE `transactions`.`sender_id`=?",[user_id],function(err, result){
           if(err) throw err;
           
+          var final_result = [];
           for(i=0;i<result.length;i++){
-            connection.query("SELECT `user_info`.`name`, `user_info`.`phone` FROM `heroku_2f4d6f8d48f57a4`.`user_info` where `user_info`.`id`=?",[result[i].id], function(err,result){
+            connection.query("SELECT `user_info`.`name`, `user_info`.`phone` FROM `heroku_2f4d6f8d48f57a4`.`user_info` where `user_info`.`id`=?",[result[i].id], function(err,results){
               if(err) throw err;
 
-              console.log("final result of id : "+result)
-              res.json({result});
+              final_result.push(results);
             })
           }
+            console.log("final result of id : "+final_result);
+            res.json({"result":final_result});
 
         })
       }
