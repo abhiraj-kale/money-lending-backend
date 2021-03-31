@@ -189,4 +189,47 @@ router.get('/profile',function(req, response){
 });
 })
 
+//Payments API
+
+router.post('/pay', function(req, res){
+  const sender_trans = req.body.sender_trans;
+  const receiver_trans = req.body.receiver_trans;
+  const amount = req.body.amount;
+  
+  var sender, receiver;
+
+  pool.getConnection(function(err, connection) {
+    if (err) throw err; // not connected!
+    
+    //Check if sender transact id is valid
+    connection.query("SELECT `user_info`.`id`,`user_info`.`wallet` FROM `heroku_2f4d6f8d48f57a4`.`user_info` where `user_info`.`transact_id`=?",[sender_trans],function(err, result){
+      if (err) throw err;
+      if(result.length<1)
+        response.json({"status":false, "message":"Sender user doesn't exist."})
+      else{
+        console.log("sender exists : " + result[0].id);
+        sender = result[0].id;
+        console.log("amount : " + amount + "\t"+ "wallet : " + result[0].wallet);
+        if(amount > result[0].wallet)
+          response.json({"status":false, "message":"Transaction amount greater than money in wallet"})
+        else{
+          //connection.query("UPDATE `heroku_2f4d6f8d48f57a4`.`user_info` SET `transact_id` = ? WHERE `id` = ?")
+        }
+      }
+    })
+
+    //Check if the receiver transact id id valid
+    connection.query("SELECT `user_info`.`id` FROM `heroku_2f4d6f8d48f57a4`.`user_info` where `user_info`.`transact_id`=?",[receiver_trans],function(err, result){
+      if (err) throw err;
+      if(result.length<1)
+      response.json({"status":false, "message":"Receiver user doesn't exist."})
+      else{
+        console.log("receiver exists : " + result[0].id);
+        receiver = result[0].id;
+      }
+    })
+});
+
+})
+
 module.exports = router;
