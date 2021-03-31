@@ -275,9 +275,14 @@ router.get('/lent', function(req, res){
         user_id = result[0].id;
         connection.query("SELECT `transactions`.`transact_no`,`transactions`.`receiver_id`,`transactions`.`amount` FROM `heroku_2f4d6f8d48f57a4`.`transactions` WHERE `transactions`.`sender_id`=?",[user_id],function(err, result){
           if(err) throw err;
-
+          
           for(i=0;i<result.length;i++){
-            connection.query("SELECT `user_info`.`name`, `user_info`.`name` FROM `heroku_2f4d6f8d48f57a4`.`user_info` where `user_info`.`id`=?")
+            connection.query("SELECT `user_info`.`name`, `user_info`.`phone` FROM `heroku_2f4d6f8d48f57a4`.`user_info` where `user_info`.`id`=?",[result[i].id], function(err,result){
+              if(err) throw err;
+
+              console.log("final result of id : "+result)
+              res.json({result});
+            })
           }
 
         })
