@@ -212,12 +212,6 @@ router.post('/pay', function(req, res){
         console.log("sender exists : " + result[0].id);
         sender = result[0].id;
         console.log("amount : " + amount + "\t"+ "wallet : " +parseInt(result[0].wallet));
-        if(amount > parseInt(result[0].wallet))
-          response.json({"status":false, "message":"Transaction amount greater than money in wallet"})
-        else{
-          //connection.query("UPDATE `heroku_2f4d6f8d48f57a4`.`user_info` SET `transact_id` = ? WHERE `id` = ?")
-          response.json({"status":true, "message":"Transaction is valid"})
-        }
       }
     })
     /*
