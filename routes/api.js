@@ -204,6 +204,7 @@ router.post('/pay', function(req, res){
     //Check if sender transact id is valid
     connection.query("SELECT `user_info`.`id`,`user_info`.`wallet` FROM `heroku_2f4d6f8d48f57a4`.`user_info` where `user_info`.`transact_id`=?",[sender_trans],function(err, result){
       if (err) throw err;
+      console.log(result);
       if(result.length<1)
         response.json({"status":false, "message":"Sender user doesn't exist."})
       else{
