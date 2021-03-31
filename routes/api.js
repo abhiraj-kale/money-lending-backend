@@ -283,7 +283,7 @@ router.get('/lent', function(req, res){
             connection.query("SELECT `user_info`.`name`, `user_info`.`phone` FROM `heroku_2f4d6f8d48f57a4`.`user_info` where `user_info`.`id`=?",[result[i].receiver_id], function(err,results){
               if(err) throw err;
               console.log(results);
-              final_result.push(results);
+              final_result.push(results[0]);
             })
           }
             console.log("final result of id : "+final_result);
