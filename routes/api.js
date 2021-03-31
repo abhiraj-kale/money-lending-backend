@@ -211,7 +211,7 @@ router.post('/pay', function(req, res){
       else{
         console.log("sender exists : " + result[0].id);
         sender = result[0].id;
-        console.log("amount : " +typeof amount + "\t"+ "wallet : " +parseInt(result[0].wallet));
+        console.log("amount : " + amount + "\t"+ "wallet : " +parseInt(result[0].wallet));
         if(amount > parseInt(result[0].wallet))
           response.json({"status":false, "message":"Transaction amount greater than money in wallet"})
         else{
