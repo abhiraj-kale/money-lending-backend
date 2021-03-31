@@ -217,39 +217,44 @@ router.post('/pay', function(req, res){
         else{
           new_sender_wallet = wallet - amount;
           console.log("new sender wallet : " + new_sender_wallet);
+
+
+          //Check if the receiver transact id is valid
+          connection.query("SELECT `user_info`.`id`,`user_info`.`wallet` FROM `heroku_2f4d6f8d48f57a4`.`user_info` where `user_info`.`transact_id`=?",[receiver_trans],function(err, result){
+            if (err) throw err;
+            if(result.length<1)
+            res.json({"status":false, "message":"Receiver user doesn't exist."})
+            else{
+              console.log("receiver exists : " + result[0].id);
+              receiver_id = result[0].id;
+              new_receiver_wallet = parseInt(result[0].wallet) + new_sender_wallet;
+              console.log("new receiver wallet : " + new_receiver_wallet);
+
+              
+              //Create new entry in transaction table
+              connection.query('INSERT INTO `heroku_2f4d6f8d48f57a4`.`transactions` ( `sender_id`, `receiver_id`, `amount`) VALUES (?, ?, ?)',[sender_id,receiver_id, amount],function(err, result){
+                if(err) throw err;      
+              })
+
+              //Update the wallets of the sender and user
+              connection.query("UPDATE `heroku_2f4d6f8d48f57a4`.`user_info` SET `wallet` = ? WHERE `id` = ?",[new_sender_wallet,sender_id],function(err,result){
+                if(err) throw err;
+              })
+              new_receiver_wallet = 
+              connection.query("UPDATE `heroku_2f4d6f8d48f57a4`.`user_info` SET `wallet` = ? WHERE `id` = ?",[new_receiver_wallet,sender_id],function(err,result){
+                if(err) throw err;
+
+                console.log("Transaction successful");
+                res.json({"status":true, "wallet":new_sender_wallet});
+              })
+
+            }
+          })
         }
 
       }
     })
-    //Check if the receiver transact id is valid
-    connection.query("SELECT `user_info`.`id`,`user_info`.`wallet` FROM `heroku_2f4d6f8d48f57a4`.`user_info` where `user_info`.`transact_id`=?",[receiver_trans],function(err, result){
-      if (err) throw err;
-      if(result.length<1)
-      res.json({"status":false, "message":"Receiver user doesn't exist."})
-      else{
-        console.log("receiver exists : " + result[0].id);
-        receiver_id = result[0].id;
-        new_receiver_wallet = parseInt(result[0].wallet) + new_sender_wallet;
-        console.log("new receiver wallet : " + new_receiver_wallet);
-      }
-    })
 
-    //Create new entry in transaction table
-    connection.query('INSERT INTO `heroku_2f4d6f8d48f57a4`.`transactions` ( `sender_id`, `receiver_id`, `amount`) VALUES (?, ?, ?)',[sender_id,receiver_id, amount],function(err, result){
-      if(err) throw err;      
-    })
-
-    //Update the wallets of the sender and user
-    connection.query("UPDATE `heroku_2f4d6f8d48f57a4`.`user_info` SET `wallet` = ? WHERE `id` = ?",[new_sender_wallet,sender_id],function(err,result){
-      if(err) throw err;
-    })
-    new_receiver_wallet = 
-    connection.query("UPDATE `heroku_2f4d6f8d48f57a4`.`user_info` SET `wallet` = ? WHERE `id` = ?",[new_receiver_wallet,sender_id],function(err,result){
-      if(err) throw err;
-
-      console.log("Transaction successful");
-      res.json({"status":true, "wallet":new_sender_wallet});
-    })
 });
 
 })
