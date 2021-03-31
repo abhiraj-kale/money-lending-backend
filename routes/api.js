@@ -194,10 +194,10 @@ router.get('/profile',function(req, response){
 
 router.post('/pay', function(req, res){
   const sender_trans = req.body.sender_trans;
-  const receiver_trans = req.body.receiver_trans;
+  const receiver_id = req.body.receiver_trans;
   const amount = parseInt(req.body.amount);
   
-  var sender_id, receiver_id, wallet, new_sender_wallet, new_receiver_wallet;
+  var sender_id, wallet, new_sender_wallet, new_receiver_wallet;
 
   pool.getConnection(function(err, connection) {
     if (err) throw err; // not connected!
@@ -220,13 +220,12 @@ router.post('/pay', function(req, res){
 
 
           //Check if the receiver transact id is valid
-          connection.query("SELECT `user_info`.`id`,`user_info`.`wallet` FROM `heroku_2f4d6f8d48f57a4`.`user_info` where `user_info`.`transact_id`=?",[receiver_trans],function(err, result){
+          connection.query("SELECT `user_info`.`wallet` FROM `heroku_2f4d6f8d48f57a4`.`user_info` where `user_info`.`id`=?",[receiver_id],function(err, result){
             if (err) throw err;
             if(result.length<1)
             res.json({"status":false, "message":"Receiver user doesn't exist."})
             else{
-              console.log("receiver exists : " + result[0].id);
-              receiver_id = result[0].id;
+              console.log("receiver exists : " + receiver_id);
               new_receiver_wallet = parseInt(result[0].wallet) + amount;
               console.log("new receiver wallet : " + new_receiver_wallet);
 
@@ -246,8 +245,7 @@ router.post('/pay', function(req, res){
                       res.json({"status":true, "wallet":new_sender_wallet});
                     })
                 })
-              })           
-
+              })      
             }
           })
         }
@@ -257,6 +255,35 @@ router.post('/pay', function(req, res){
 
 });
 
+})
+
+//Get list of 
+router.get('/lent', function(req, res){
+  const transact_id = req.body.transact_id;
+  var user_id;
+
+  pool.getConnection(function(err, connection) {
+    if (err) throw err; // not connected!
+        
+    connection.query("SELECT `user_info`.`id` FROM `heroku_2f4d6f8d48f57a4`.`user_info` where `user_info`.`transact_id`=?",[transact_id],function(err, result){
+      if (err) throw err;
+
+      if(result.length<1)
+        res.json({"status":false, "message":"No such user."})
+      else{
+        user_id = result[0].id;
+        connection.query("SELECT `transactions`.`transact_no`,`transactions`.`receiver_id`,`transactions`.`amount` FROM `heroku_2f4d6f8d48f57a4`.`transactions` WHERE `transactions`.`sender_id`=?",[user_id],function(err, result){
+          if(err) throw err;
+
+          for(i=0;i<result.length;i++){
+            connection.query("SELECT `user_info`.`name,` FROM `heroku_2f4d6f8d48f57a4`.`user_info` where `user_info`.`id`=?")
+          }
+
+        })
+      }
+
+    })
+});
 })
 
 module.exports = router;
