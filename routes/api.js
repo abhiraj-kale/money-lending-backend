@@ -220,6 +220,7 @@ router.post('/pay', function(req, res){
 
 
           //Check if the receiver transact id is valid
+          console.log("receiver:"+receiver_id)
           connection.query("SELECT `user_info`.`wallet` FROM `heroku_2f4d6f8d48f57a4`.`user_info` where `user_info`.`id`=?",[receiver_id],function(err, result){
             if (err) throw err;
             if(result.length<1)
