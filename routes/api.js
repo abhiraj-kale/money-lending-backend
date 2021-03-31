@@ -194,7 +194,7 @@ router.get('/profile',function(req, response){
 
 router.post('/pay', function(req, res){
   const sender_trans = req.body.sender_trans;
-  const receiver_id = req.body.receiver_trans;
+  const receiver_id = req.body.receiver_id;
   const amount = parseInt(req.body.amount);
   
   var sender_id, wallet, new_sender_wallet, new_receiver_wallet;
@@ -277,7 +277,7 @@ router.get('/lent', function(req, res){
           if(err) throw err;
 
           for(i=0;i<result.length;i++){
-            connection.query("SELECT `user_info`.`name,` FROM `heroku_2f4d6f8d48f57a4`.`user_info` where `user_info`.`id`=?")
+            connection.query("SELECT `user_info`.`name`, `user_info`.`name` FROM `heroku_2f4d6f8d48f57a4`.`user_info` where `user_info`.`id`=?")
           }
 
         })
