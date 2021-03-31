@@ -214,10 +214,11 @@ router.post('/pay', function(req, res){
           response.json({"status":false, "message":"Transaction amount greater than money in wallet"})
         else{
           //connection.query("UPDATE `heroku_2f4d6f8d48f57a4`.`user_info` SET `transact_id` = ? WHERE `id` = ?")
+          response.json({"status":true, "message":"Transaction is valid"})
         }
       }
     })
-
+    /*
     //Check if the receiver transact id id valid
     connection.query("SELECT `user_info`.`id` FROM `heroku_2f4d6f8d48f57a4`.`user_info` where `user_info`.`transact_id`=?",[receiver_trans],function(err, result){
       if (err) throw err;
@@ -228,6 +229,7 @@ router.post('/pay', function(req, res){
         receiver = result[0].id;
       }
     })
+    */
 });
 
 })
