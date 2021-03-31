@@ -195,9 +195,9 @@ router.get('/profile',function(req, response){
 router.post('/pay', function(req, res){
   const sender_trans = req.body.sender_trans;
   const receiver_trans = req.body.receiver_trans;
-  const amount =parseInt(req.body.amount);
+  const amount = parseInt(req.body.amount);
   
-  var sender, receiver;
+  var sender_id, receiver_id, wallet, new_sender_wallet, new_receiver_wallet;
 
   pool.getConnection(function(err, connection) {
     if (err) throw err; // not connected!
@@ -210,29 +210,46 @@ router.post('/pay', function(req, res){
         res.json({"status":false, "message":"Sender user doesn't exist."})
       else{
         console.log("sender exists : " + result[0].id);
-        sender = result[0].id;
-        var wallet = parseInt(result[0].wallet);
-        console.log("amount : " + amount + "\t"+ "wallet : " + wallet);
+        sender_id = result[0].id;
+        wallet = parseInt(result[0].wallet);
         if(amount > wallet)
           res.json({"status":false, "message":"Transaction amount greater than money in wallet"})
         else{
-          //connection.query("UPDATE `heroku_2f4d6f8d48f57a4`.`user_info` SET `transact_id` = ? WHERE `id` = ?")
-          res.json({"status":true, "message":"Transaction is valid"})
+          new_sender_wallet = wallet - amount;
+          console.log("new sender wallet : " + new_sender_wallet);
         }
+
       }
     })
-    /*
-    //Check if the receiver transact id id valid
-    connection.query("SELECT `user_info`.`id` FROM `heroku_2f4d6f8d48f57a4`.`user_info` where `user_info`.`transact_id`=?",[receiver_trans],function(err, result){
+    //Check if the receiver transact id is valid
+    connection.query("SELECT `user_info`.`id`,`user_info`.`wallet` FROM `heroku_2f4d6f8d48f57a4`.`user_info` where `user_info`.`transact_id`=?",[receiver_trans],function(err, result){
       if (err) throw err;
       if(result.length<1)
       res.json({"status":false, "message":"Receiver user doesn't exist."})
       else{
         console.log("receiver exists : " + result[0].id);
-        receiver = result[0].id;
+        receiver_id = result[0].id;
+        new_receiver_wallet = parseInt(result[0].wallet) + new_sender_wallet;
+        console.log("new receiver wallet : " + new_receiver_wallet);
       }
     })
-    */
+
+    //Create new entry in transaction table
+    connection.query('INSERT INTO `heroku_2f4d6f8d48f57a4`.`transactions` ( `sender_id`, `receiver_id`, `amount`) VALUES (?, ?, ?)',[sender_id,receiver_id, amount],function(err, result){
+      if(err) throw err;      
+    })
+
+    //Update the wallets of the sender and user
+    connection.query("UPDATE `heroku_2f4d6f8d48f57a4`.`user_info` SET `wallet` = ? WHERE `id` = ?",[new_sender_wallet,sender_id],function(err,result){
+      if(err) throw err;
+    })
+    new_receiver_wallet = 
+    connection.query("UPDATE `heroku_2f4d6f8d48f57a4`.`user_info` SET `wallet` = ? WHERE `id` = ?",[new_receiver_wallet,sender_id],function(err,result){
+      if(err) throw err;
+
+      console.log("Transaction successful");
+      res.json({"status":true, "wallet":new_sender_wallet});
+    })
 });
 
 })
