@@ -289,7 +289,7 @@ router.get('/lent', function(req, res){
           }, function(err){
               if(err) throw err;
               console.log(array);
-              res.end(array);
+              res.json(array);
           });
 
         })
