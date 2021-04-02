@@ -286,12 +286,14 @@ router.get('/lent', function(req, res){
               
               jsonObj = {"name":results[0].name, "phone":results[0].phone, "amount": result[0].amount};
               console.log("json : " + jsonObj)
-              array.push(JSON.stringify(jsonObj));
+              array.push(jsonObj);
               console.log("arr :  "+ array);
+
+              if(i=result.length-1){
+                res.json(array);
+              }
             })
           }
-            console.log("final result of id : "+JSON.stringify(array));
-            res.json({"result":JSON.stringify(array)});
 
         })
       }
