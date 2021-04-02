@@ -277,25 +277,8 @@ router.get('/lent', function(req, res){
         console.log("user id : " + user_id)
         connection.query("SELECT `transactions`.`transact_no`,`transactions`.`receiver_id`,`transactions`.`amount` FROM `heroku_2f4d6f8d48f57a4`.`transactions` WHERE `transactions`.`sender_id`=?",[user_id],function(err, result){
           if(err) throw err;
-          console.log("result len : " + result)
-          var array = [];
-          for(var i=0;i<result.length;i++){
-            console.log("result[i].id : "+result[i].receiver_id)
-            connection.query("SELECT `user_info`.`name`, `user_info`.`phone` FROM `heroku_2f4d6f8d48f57a4`.`user_info` where `user_info`.`id`=?",[result[i].receiver_id], function(err,results){
-              if(err) throw err;
-              
-              jsonObj = {"name":results[0].name, "phone":results[0].phone, "amount": result[0].amount};
-              console.log("json : " + jsonObj)
-              array.push(jsonObj);
-              console.log("arr :  "+ array);
-              console.log("i : "+ i)
-              if(i==result.length-1){
-                res.json(array);
-              }
-
-            })
-          }
-
+          
+          res.json(result);
         })
       }
 
