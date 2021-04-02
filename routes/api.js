@@ -5,6 +5,7 @@ var mysql = require('mysql');
 const crypto = require('crypto');
 const fs = require("fs");
 const { response } = require('../app');
+const async = require('async');
 const { type } = require('os');
 const { json } = require('express');
 //const NodeRSA = require('node-rsa');
@@ -277,13 +278,18 @@ router.get('/lent', function(req, res){
         connection.query("SELECT `transactions`.`transact_no`,`transactions`.`receiver_id`,`transactions`.`amount` FROM `heroku_2f4d6f8d48f57a4`.`transactions` WHERE `transactions`.`sender_id`=?",[user_id],function(err, result){
           if(err) throw err;
           
-          
-          result.forEach(key => {
+          var array = [];
+
+          async.each(result, function(key){
             connection.query("SELECT `user_info`.`name`,`user_info`.`phone` FROM `heroku_2f4d6f8d48f57a4`.`user_info` WHERE `user_info`.`id`=?",[key.receiver_id], function(error, results){
               if(error) throw error;
-  
-              res.write({"receiver_id":key.receiver_id,"name":results[0].name,"phone":results[0].phone,"amount":key.amount});
+              
+              array.push(JSON.stringify({"receiver_id":key.receiver_id,"name":results[0].name,"phone":results[0].phone,"amount":key.amount}));
             })
+          }, function(err){
+              if(err) throw err;
+              else
+                res.end(array);
           });
         })
       }
