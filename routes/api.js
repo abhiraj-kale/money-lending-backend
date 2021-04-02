@@ -6,6 +6,7 @@ const crypto = require('crypto');
 const fs = require("fs");
 const { response } = require('../app');
 const { type } = require('os');
+const { json } = require('express');
 //const NodeRSA = require('node-rsa');
 
 function getCustomerId(phone){
@@ -277,18 +278,18 @@ router.get('/lent', function(req, res){
         connection.query("SELECT `transactions`.`transact_no`,`transactions`.`receiver_id`,`transactions`.`amount` FROM `heroku_2f4d6f8d48f57a4`.`transactions` WHERE `transactions`.`sender_id`=?",[user_id],function(err, result){
           if(err) throw err;
           console.log("result len : " + result)
-          var final_result = [];
+          var array = [];
           for(i=0;i<result.length;i++){
             console.log("result[i].id : "+result[i].receiver_id)
             connection.query("SELECT `user_info`.`name`, `user_info`.`phone` FROM `heroku_2f4d6f8d48f57a4`.`user_info` where `user_info`.`id`=?",[result[i].receiver_id], function(err,results){
               if(err) throw err;
               console.log(results);
               jsonObj = {"name":results[0].name, "phone":results[0].phone, "amount": result[0].amount};
-              final_result[i] = jsonObj;
+              array.push(jsonObj);
             })
           }
-            console.log("final result of id : "+final_result);
-            res.json({"result":final_result});
+            console.log("final result of id : "+JSON.stringify(array));
+            res.json({"result":JSON.stringify(array)});
 
         })
       }
