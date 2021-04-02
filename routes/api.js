@@ -279,14 +279,12 @@ router.get('/lent', function(req, res){
           if(err) throw err;
           
           var array = [];
-
           async.each(result, function(key,callback){
             connection.query("SELECT `user_info`.`name`,`user_info`.`phone` FROM `heroku_2f4d6f8d48f57a4`.`user_info` WHERE `user_info`.`id`=?",[key.receiver_id], function(error, results){
               if(error) throw error;
               
               array.push(JSON.stringify({"receiver_id":key.receiver_id,"name":results[0].name,"phone":results[0].phone,"amount":key.amount}));
               console.log("new array : " + array);
-              callback();
             })
           }, function(err){
               if(err) throw err;
