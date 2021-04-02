@@ -285,10 +285,11 @@ router.get('/lent', function(req, res){
               if(error) throw error;
               
               array.push(JSON.stringify({"receiver_id":key.receiver_id,"name":results[0].name,"phone":results[0].phone,"amount":key.amount}));
+              console.log("new array : " + array);
             })
           }, function(err){
               if(err) throw err;
-              else
+                console.log(array);
                 res.end(array);
           });
         })
