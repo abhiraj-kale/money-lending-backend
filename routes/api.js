@@ -289,7 +289,7 @@ router.get('/lent', function(req, res){
               array.push(jsonObj);
               console.log("arr :  "+ array);
 
-              if(i=result.length-1){
+              if(i==result.length-1){
                 res.json(array);
               }
             })
