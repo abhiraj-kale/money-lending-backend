@@ -290,7 +290,7 @@ router.get('/lent', function(req, res){
             })
           }, function(err){
               if(err) throw err;
-              console.log("Callback called";
+              console.log("Callback called");
           });
 
         })
