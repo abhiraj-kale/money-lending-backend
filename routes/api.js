@@ -20,7 +20,7 @@ function getCustomerId(phone){
 
 // Creating a function to encrypt string
 function encryptString (plaintext, publicKeyFile) {
-	const publicKey = fs.readFileSync(publicKeyFile, "utf8");
+	const publicKey = process.env.PUBLIC_KEY//fs.readFileSync(publicKeyFile, "utf8");
 
 	// publicEncrypt() method with its parameters
 	const encrypted = crypto.publicEncrypt(
@@ -31,7 +31,7 @@ function encryptString (plaintext, publicKeyFile) {
 
 // Creating a function to decrypt string
 function decryptString (ciphertext, privateKeyFile) {
-	const privateKey = fs.readFileSync(privateKeyFile, "utf8");
+	const privateKey = process.env.PRIVATE_KEY//fs.readFileSync(privateKeyFile, "utf8");
 
 	// privateDecrypt() method with its parameters
 	const decrypted = crypto.privateDecrypt(
