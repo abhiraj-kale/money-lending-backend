@@ -59,6 +59,8 @@ pool.getConnection(function(err, connection) {
 router.post('/login', function(req, response, next) {
     const id = req.body.id;
     const auth_key = String(req.body.auth_key).replace(/\s/g, '+')
+    console.log("id:"+id)
+    console.log("auth key:"+auth_key)
     let password;
 
     pool.getConnection(function(err, connection) {
@@ -97,6 +99,8 @@ router.post('/login', function(req, response, next) {
 router.post('/getKeys', function(req, res, next) {
   const phone = req.body.phone;
   const password = req.body.password
+  console.log("phone : "+phone)
+  console.log("password:"+password)
   const hashed_pass = crypto.createHash('md5').update(req.body.password).digest('hex');
 
 
