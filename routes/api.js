@@ -144,9 +144,10 @@ router.post('/signup', function(req, res, next) {
         //Insert user info into database      
         connection.query('INSERT IGNORE INTO `heroku_2f4d6f8d48f57a4`.`user_info` (`id`, `name`, `password`, `phone`, `transact_id`) VALUES (?, ?, ?, ?, ?)', [id,name,hashed_pass,phone,transact_id],function (error) {  
           if (error) throw error;
-          else
-          res.send(JSON.stringify({"id":id,"auth_key":auth_key,"transact_id":transact_id,"log_in_status":true}));
-          
+          else{
+            console.log("auth key : \n" + auth_key);
+            res.send(JSON.stringify({"id":id,"auth_key":auth_key,"transact_id":transact_id,"log_in_status":true}));
+          }
           connection.release();      
           if (error) throw error;      
           // Don't use the connection here, it has been returned to the pool.
