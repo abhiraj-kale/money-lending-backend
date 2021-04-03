@@ -19,8 +19,8 @@ function getCustomerId(phone){
 }
 
 // Creating a function to encrypt string
-function encryptString (plaintext, publicKeyFile) {
-	const publicKey = process.env.PUBLIC_KEY//fs.readFileSync(publicKeyFile, "utf8");
+function encryptString (plaintext) {
+	const publicKey = process.env.PUBLIC_KEY;
 
 	// publicEncrypt() method with its parameters
 	const encrypted = crypto.publicEncrypt(
@@ -30,8 +30,8 @@ function encryptString (plaintext, publicKeyFile) {
 }
 
 // Creating a function to decrypt string
-function decryptString (ciphertext, privateKeyFile) {
-	const privateKey = process.env.PRIVATE_KEY//fs.readFileSync(privateKeyFile, "utf8");
+function decryptString (ciphertext) {
+	const privateKey = process.env.PRIVATE_KEY;
 
 	// privateDecrypt() method with its parameters
 	const decrypted = crypto.privateDecrypt(
@@ -68,7 +68,7 @@ router.post('/login', function(req, response, next) {
       
       let temp_pass;
       try{
-        temp_pass = decryptString(auth_key, 'private_key');
+        temp_pass = decryptString(auth_key);
       }catch(Error){
         response.json({"log_in_status":false, "message":"Incorrect auth_key"})
       }
@@ -106,7 +106,7 @@ router.post('/getKeys', function(req, res, next) {
     if (err) throw err; 
 
   // Use the public key to encrypt    
-  const auth_key = encryptString(password, 'public_key');
+  const auth_key = encryptString(password);
 
   connection.query("SELECT `user_info`.`id` FROM `heroku_2f4d6f8d48f57a4`.`user_info` where `user_info`.`phone`=? AND `user_info`.`password`=?",[phone,hashed_pass],function(error, result){
     if(error) throw error;
@@ -133,7 +133,7 @@ router.post('/signup', function(req, res, next) {
       if (err) throw err; 
 
     // Use the public key to encrypt    
-    const auth_key = encryptString(password, 'public_key');
+    const auth_key = encryptString(password);
 
     connection.query("SELECT `user_info`.`id` FROM `heroku_2f4d6f8d48f57a4`.`user_info` where `user_info`.`phone`=?",[phone],function(error, result){
       if(error) throw error;
@@ -170,7 +170,7 @@ router.get('/profile',function(req, response){
     
     let temp_pass;
     try{
-      temp_pass = decryptString(auth_key, 'private_key');
+      temp_pass = decryptString(auth_key);
     }catch(Error){
       response.json({"status":false, "message":"Incorrect auth_key"})
     }
