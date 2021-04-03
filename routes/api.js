@@ -72,16 +72,16 @@ router.post('/login', function(req, response, next) {
       }
       password = crypto.createHash('md5').update(temp_pass).digest('hex');  
       
-      connection.query("SELECT `user_info`.`password` FROM `heroku_2f4d6f8d48f57a4`.`user_info` where `user_info`.`id`=?",[id],function(err, res){
+      connection.query("SELECT `user_info`.`password`,`user_info`.`wallet` FROM `heroku_2f4d6f8d48f57a4`.`user_info` where `user_info`.`id`=?",[id],function(err, res){
         if (err) throw err;
         if(res.length<1)
         response.json({"log_in_status":false, "message":"No such user."})
         else{
           if (res[0].password==password){
             const transact_id = uuidv4();
-            connection.query("UPDATE `heroku_2f4d6f8d48f57a4`.`user_info` SET `transact_id` = ? WHERE `id` = ?",[transact_id,id], function(e, result) {
+            connection.query("UPDATE `heroku_2f4d6f8d48f57a4`.`user_info` SET `transact_id` = ? WHERE `id` = ?",[transact_id,id], function(e) {
               if (e) throw e;
-              response.json({"transact_id":transact_id,"log_in_status":true})
+              response.json({"transact_id":transact_id,"wallet":res[0].wallet, "log_in_status":true})
             })
           }
           else {
