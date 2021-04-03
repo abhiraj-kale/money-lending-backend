@@ -9,7 +9,8 @@ const async = require('async');
 const { type } = require('os');
 const { json } = require('express');
 //const NodeRSA = require('node-rsa');
-
+console.log("private key : \n" + process.env.PRIVATE_KEY)
+console.log("public key : \n" + process.env.PUBLIC_KEY)
 function getCustomerId(phone){
   pool.getConnection(function(err,connection){
     if(err) throw err;
