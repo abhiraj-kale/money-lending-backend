@@ -260,7 +260,7 @@ router.post('/pay', function(req, res){
 
 })
 
-//Get list of 
+//Get list of ids money lent to
 router.get('/lent', function(req, res){
   const transact_id = req.body.transact_id;
   var user_id;
@@ -284,7 +284,45 @@ router.get('/lent', function(req, res){
               if(error) throw error;
               
               array.push({"receiver_id":key.receiver_id,"name":results[0].name,"phone":results[0].phone,"amount":key.amount});
-              //console.log("new array : " + array);
+              callback();
+            })
+          }, function(err){
+              if(err) throw err;
+              console.log("Callback called");
+              res.json(array);
+          });
+
+        })
+      }
+
+    })
+});
+})
+
+//Get list of ids money borrowed from
+router.get('/borrowed', function(req, res){
+  const transact_id = req.body.transact_id;
+  var user_id;
+
+  pool.getConnection(function(err, connection) {
+    if (err) throw err; // not connected!
+        
+    connection.query("SELECT `user_info`.`id` FROM `heroku_2f4d6f8d48f57a4`.`user_info` where `user_info`.`transact_id`=?",[transact_id],function(err, result){
+      if (err) throw err;
+
+      if(result.length<1)
+        res.json({"status":false, "message":"No such user."})
+      else{
+        user_id = result[0].id;
+        connection.query("SELECT `transactions`.`transact_no`,`transactions`.`sender_id`,`transactions`.`amount` FROM `heroku_2f4d6f8d48f57a4`.`transactions` WHERE `transactions`.`receiver_id`=?",[user_id],function(err, result){
+          if(err) throw err;
+          
+          var array = [];
+          async.each(result, function(key,callback){
+            connection.query("SELECT `user_info`.`name`,`user_info`.`phone` FROM `heroku_2f4d6f8d48f57a4`.`user_info` WHERE `user_info`.`id`=?",[key.sender_id], function(error, results){
+              if(error) throw error;
+              
+              array.push({"sender_id":key.sender_id,"name":results[0].name,"phone":results[0].phone,"amount":key.amount});
               callback();
             })
           }, function(err){
