@@ -285,11 +285,12 @@ router.get('/lent', function(req, res){
               
               array.push(JSON.stringify({"receiver_id":key.receiver_id,"name":results[0].name,"phone":results[0].phone,"amount":key.amount}));
               console.log("new array : " + array);
+              res.write(JSON.stringify(array));
+              callback();
             })
           }, function(err){
               if(err) throw err;
-              console.log(array);
-              res.json(array);
+              console.log("Callback called";
           });
 
         })
