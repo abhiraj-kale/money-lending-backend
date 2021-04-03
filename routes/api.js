@@ -323,6 +323,7 @@ router.get('/borrowed', function(req, res){
               if(error) throw error;
               
               array.push({"sender_id":key.sender_id,"name":results[0].name,"phone":results[0].phone,"amount":key.amount});
+              console.log({"sender_id":key.sender_id,"name":results[0].name,"phone":results[0].phone,"amount":key.amount})
               callback();
             })
           }, function(err){
