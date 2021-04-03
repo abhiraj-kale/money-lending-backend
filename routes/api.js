@@ -323,7 +323,6 @@ router.get('/borrowed', function(req, res){
               if(error) throw error;
               
               array.push({"sender_id":key.sender_id,"name":results[0].name,"phone":results[0].phone,"amount":key.amount});
-              console.log({"sender_id":key.sender_id,"name":results[0].name,"phone":results[0].phone,"amount":key.amount})
               callback();
             })
           }, function(err){
@@ -337,6 +336,32 @@ router.get('/borrowed', function(req, res){
 
     })
 });
+})
+
+// Get Users Name and id from phone number
+router.get('/getUserId', function(req,res){
+  const transact_id = req.body.transact_id;
+  const phone = req.body.phone;
+
+  pool.getConnection(function(err, connection) {
+    if (err) throw err; // not connected!
+
+    connection.query("SELECT `user_info`.`id` FROM `heroku_2f4d6f8d48f57a4`.`user_info` where `user_info`.`transact_id`=?",[transact_id],function(err,result){
+      if(err) throw err;
+      if(result.length<1) res.json({"status":false, "messsage":"Sender does not exist"});
+      else{
+        connection.query("SELECT `user_info`.`id` FROM `heroku_2f4d6f8d48f57a4`.`user_info` where `user_info`.`phone`=?",[phone],function(err, results){
+          if(err) throw err;
+          if(results.length<1) res.json({"status":false, "messsage":"User does not exist"})
+          else{
+            res.json({"status":true, "id":results[0].id});
+          }
+        });
+      }
+    })
+
+  });
+
 })
 
 module.exports = router;
