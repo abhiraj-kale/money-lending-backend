@@ -163,7 +163,7 @@ router.post('/signup', function(req, res, next) {
   });
 });
 
-router.get('/profile',function(req, response){
+router.post('/profile',function(req, response){
   const id = req.body.id;
   const auth_key = String(req.body.auth_key).replace(/\s/g, '+')
   let password;
@@ -265,7 +265,7 @@ router.post('/pay', function(req, res){
 })
 
 //Get list of ids money lent to
-router.get('/lent', function(req, res){
+router.post('/lent', function(req, res){
   const transact_id = req.params.transact_id;
   console.log("transact id : \n"+transact_id)
   var user_id;
@@ -306,7 +306,7 @@ router.get('/lent', function(req, res){
 })
 
 //Get list of ids money borrowed from
-router.get('/borrowed', function(req, res){
+router.post('/borrowed', function(req, res){
   const transact_id = req.body.transact_id;
   var user_id;
 
@@ -345,7 +345,7 @@ router.get('/borrowed', function(req, res){
 })
 
 // Get Users Name and id from phone number
-router.get('/getUserId', function(req,res){
+router.post('/getUserId', function(req,res){
   const transact_id = req.body.transact_id;
   const phone = req.body.phone;
 
