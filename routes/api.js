@@ -295,7 +295,7 @@ router.post('/lent', function(req, res){
               if(err) throw err;
               console.log("Callback called");
               console.log(array);
-              rres.status(200).json(array);
+              res.status(200).json(array);
           });
 
         })
