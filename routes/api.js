@@ -265,8 +265,8 @@ router.post('/pay', function(req, res){
 })
 
 //Get list of ids money lent to
-router.get('/lent', function(req, res){
-  const transact_id = req.query.transact_id;
+router.post('/lent', function(req, res){
+  const transact_id = req.body.transact_id;
   console.log("transact id : \n"+transact_id)
   var user_id;
 
