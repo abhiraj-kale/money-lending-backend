@@ -356,11 +356,11 @@ router.post('/getUserId', function(req,res){
       if(err) throw err;
       if(result.length<1) res.json({"status":false, "messsage":"Sender does not exist"});
       else{
-        connection.query("SELECT `user_info`.`id` FROM `heroku_2f4d6f8d48f57a4`.`user_info` where `user_info`.`phone`=?",[phone],function(err, results){
+        connection.query("SELECT `user_info`.`id`,`user_info`.`name`,`user_info`.`phone` FROM `heroku_2f4d6f8d48f57a4`.`user_info` where `user_info`.`phone`=?",[phone],function(err, results){
           if(err) throw err;
           if(results.length<1) res.json({"status":false, "messsage":"User does not exist"})
           else{
-            res.json({"status":true, "id":results[0].id});
+            res.json({"status":true, "id":results[0].id, "name":results[0].name,"phone":results[0].phone});
           }
         });
       }
