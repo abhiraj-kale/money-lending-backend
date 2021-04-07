@@ -367,7 +367,22 @@ router.post('/getUserId', function(req,res){
     })
 
   });
+})
 
+router.post('/getWallet', function(req, res){
+  const transact_id = req.body.transact_id;
+
+  pool.getConnection(function(err, connection) {
+    if (err) throw err; // not connected!
+
+    connection.query("SELECT `user_info`.`wallet` FROM `heroku_2f4d6f8d48f57a4`.`user_info` where `user_info`.`transact_id`=?",[transact_id],function(err,result){
+      if(err) throw err;
+      if(result.length<1) res.json({"status":false, "messsage":"Sender does not exist"});
+      else{
+        res.json({"status":true, "wallet":result[0].wallet});
+      }
+    })
+  });
 })
 
 module.exports = router;
