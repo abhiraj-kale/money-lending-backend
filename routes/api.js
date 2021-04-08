@@ -245,7 +245,7 @@ router.post('/pay', function(req, res){
                 connection.query("UPDATE `heroku_2f4d6f8d48f57a4`.`user_info` SET `wallet` = ? WHERE `id` = ?",[new_sender_wallet,sender_id],function(err,result){
                   if(err) throw err;
 
-                    connection.query("UPDATE `heroku_2f4d6f8d48f57a4`.`user_info` SET `wallet` = ? WHERE `id` = ?",[new_receiver_wallet,sender_id],function(err,result){
+                    connection.query("UPDATE `heroku_2f4d6f8d48f57a4`.`user_info` SET `wallet` = ? WHERE `id` = ?",[new_receiver_wallet,receiver_id],function(err,result){
                       if(err) throw err;
       
                       console.log("Transaction successful");
