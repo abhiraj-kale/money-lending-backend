@@ -385,4 +385,25 @@ router.post('/getWallet', function(req, res){
   });
 })
 
+router.post('/addMoney', function(req, res){
+  const transact_id = req.body.transact_id;
+  const amount = parseInt(req.body.amount);
+  pool.getConnection(function(err, connection) {
+    if (err) throw err; // not connected!
+
+    connection.query("SELECT `user_info`.`id`,`user_info`.`wallet` FROM `heroku_2f4d6f8d48f57a4`.`user_info` where `user_info`.`transact_id`=?",[transact_id],function(err,result){
+      if(err) throw err;
+      if(result.length<1) res.json({"status":false, "messsage":"User does not exist"});
+      else{
+        var new_wallet = result[0].wallet + amount;
+        var id = result[0].id;
+        connection.query("UPDATE `heroku_2f4d6f8d48f57a4`.`user_info` SET `wallet` = ? WHERE `transact_id` = ?",[new_wallet, transact_id],function(err){
+          if (err) throw err;
+          res.json({"status":true, "id":id, "wallet": new_wallet});
+        });
+      }
+    })
+  });
+})
+
 module.exports = router;
