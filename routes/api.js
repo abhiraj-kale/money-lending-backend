@@ -371,7 +371,7 @@ router.post('/getUserId', function(req,res){
 
 router.post('/getWallet', function(req, res){
   const transact_id = req.body.transact_id;
-
+  console.log("transact_id : ", transact_id);
   pool.getConnection(function(err, connection) {
     if (err) throw err; // not connected!
 
